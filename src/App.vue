@@ -93,7 +93,6 @@ function getRank() {
     correctRate > 0.8 ? 'S' :
       correctRate > 0.5 ? 'A' :
         correctRate > 0.3 ? 'B' : 'C'
-  console.log(correctRate, cacheCount)
   return rank + (cacheCount <= 0 ? '+' : '');
 }
 
