@@ -9,8 +9,6 @@ wavs.forEach(wav => {
   fs.writeFileSync(wav + '.enc', out)
 })
 
-
-
 function xor2(hex1, hex2) {
   const buf1 = Buffer.from(hex1, 'hex');
   const buf2 = Buffer.from(hex2, 'hex');
