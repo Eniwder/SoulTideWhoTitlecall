@@ -8,7 +8,8 @@
           </div>
         </v-row>
         <v-row justify="center">
-          <img v-for="doll in dolls" :src="'/dolls/' + doll + '/icon.png'" class="icons" @click="selectDoll(doll)">
+          <img v-for="doll in dolls" :src="basepath + 'dolls/' + doll + '/icon.png'" class="icons"
+            @click="selectDoll(doll)">
         </v-row>
         <v-progress-linear :model-value="progress" :height="16" class="progressbar"></v-progress-linear>
       </v-col>
@@ -32,10 +33,10 @@
         <v-row justify="center">
           <v-card v-for="history in selectHistory" class="resultcard"
             :color="history.answer === history.select ? 'green' : 'red'">
-            <img :src="'/dolls/' + history.answer + '/icon.png'" @click="selectPlay(history.answer)">
+            <img :src="basepath + 'dolls/' + history.answer + '/icon.png'" @click="selectPlay(history.answer)">
             <span v-if="history.answer !== history.select">
               →
-              <img :src="'/dolls/' + history.select + '/icon.png'" @click="selectPlay(history.select)">
+              <img :src="basepath + 'dolls/' + history.select + '/icon.png'" @click="selectPlay(history.select)">
             </span>
           </v-card>
         </v-row>
@@ -75,6 +76,7 @@ import { computed } from 'vue';
 import { Buffer } from 'buffer'
 window.Buffer = window.Buffer || Buffer
 const shuffleArray = arr => arr.map(_ => _).sort(() => Math.random() - Math.random());
+const basepath = import.meta.env.BASE_URL;
 
 const dolls = ["Akaset", "Alisa", "AmaneInori", "Andrea", "Asuna", "Aurora", "Benten", "Colcher", "Dolores", "Dreizehn", "Ennis", "EtsukazumMiko", "Freesia", "Gawana", "HagakureRuri", "HazukiYuki", "Juewa", "Lavira", "Minerdwen", "NankungLin", "Netsuki", "NicoletteLamel", "QuLing", "SakuyaMako", "Satya", "Silenus", "TsukinoMiyo", "Virgina"]
 // const dolls = ["Akaset", "Alisa", "AmaneInori"] // テスト用
@@ -123,7 +125,7 @@ async function getCv(name) {
     cacheCount += 1;
     return cvCache[name];
   }
-  const data = (await fetch(`/dolls/${name}/titlecall.wav.enc`)).body;
+  const data = (await fetch(`${basepath}dolls/${name}/titlecall.wav.enc`)).body;
   const reader = data.getReader()
   let buf = Buffer.from([])
   while (true) {
