@@ -222,6 +222,15 @@ main {
   cursor: pointer;
 }
 
+.icons,
+.dummyImgWrapper {
+  transition: transform .2s;
+
+  &:active {
+    transform: scale(.95);
+  }
+}
+
 .v-progress-linear {
   position: fixed !important;
   top: inherit !important;
