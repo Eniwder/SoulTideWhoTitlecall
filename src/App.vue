@@ -4,7 +4,7 @@
       <v-col v-if="!showResult">
         <v-row justify="center">
           <div class="dummyImgWrapper" @click="randomPlay()">
-            <img class="dummyImg">
+            <img class="dummyImg" ref="dummyImg">
           </div>
         </v-row>
         <v-row justify="center">
@@ -71,20 +71,20 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
-import { computed } from 'vue';
-import { Buffer } from 'buffer'
-window.Buffer = window.Buffer || Buffer
+import { ref } from 'vue';
+import { Buffer } from 'buffer';
+window.Buffer = window.Buffer || Buffer;
 const shuffleArray = arr => arr.map(_ => _).sort(() => Math.random() - Math.random());
 const basepath = import.meta.env.BASE_URL;
 
-const dolls = ["Akaset", "Alisa", "AmaneInori", "Andrea", "Asuna", "Aurora", "Benten", "Colcher", "Dolores", "Dreizehn", "Ennis", "EtsukazumMiko", "Freesia", "Gawana", "HagakureRuri", "HazukiYuki", "Juewa", "Lavira", "Minerdwen", "NankungLin", "Netsuki", "NicoletteLamel", "QuLing", "SakuyaMako", "Satya", "Silenus", "TsukinoMiyo", "Virgina"]
+const dolls = ["Akaset", "Alisa", "AmaneInori", "Andrea", "Asuna", "Aurora", "Benten", "Colcher", "Dolores", "Dreizehn", "Ennis", "EtsukazumMiko", "Freesia", "Gawana", "HagakureRuri", "HazukiYuki", "Juewa", "Lavira", "Minerdwen", "NankungLin", "Netsuki", "NicoletteLamel", "QuLing", "SakuyaMako", "Satya", "Silenus", "TsukinoMiyo", "Virgina"];
 // const dolls = ["Akaset", "Alisa", "AmaneInori"] // テスト用
 let shuffleDolls = shuffleArray(dolls);
 
-const isDialogActive = ref(true)
-const progress = ref(0)
-const showResult = ref(false)
+const isDialogActive = ref(true);
+const progress = ref(0);
+const showResult = ref(false);
+const dummyImg = ref(null);
 
 function getRank() {
   const correctNum = selectHistory.filter(_ => _.answer === _.select).length;
@@ -92,7 +92,7 @@ function getRank() {
   const rank = correctRate >= 1 ? 'SS' :
     correctRate > 0.8 ? 'S' :
       correctRate > 0.5 ? 'A' :
-        correctRate > 0.3 ? 'B' : 'C'
+        correctRate > 0.3 ? 'B' : 'C';
   return rank + (cacheCount <= 0 ? '+' : '');
 }
 
@@ -100,7 +100,7 @@ function retry() {
   shuffleDolls = shuffleArray(dolls);
   progress.value = 0;
   showResult.value = false;
-  selectHistory.splice(0, selectHistory.length)
+  selectHistory.splice(0, selectHistory.length);
   cacheCount = -shuffleDolls.length; // めんどくさくなった
 }
 
@@ -117,7 +117,7 @@ async function selectPlay(name) {
   audio.play();
 }
 
-const cvCache = {}
+const cvCache = {};
 let cacheCount = 0;
 async function getCv(name) {
   if (cvCache[name]) {
@@ -125,12 +125,12 @@ async function getCv(name) {
     return cvCache[name];
   }
   const data = (await fetch(`${basepath}dolls/${name}/titlecall.wav.enc`)).body;
-  const reader = data.getReader()
-  let buf = Buffer.from([])
+  const reader = data.getReader();
+  let buf = Buffer.from([]);
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    buf = Buffer.concat([buf, value])
+    buf = Buffer.concat([buf, value]);
   }
   buf = xor2(buf, Buffer.from("2c", 'hex'));
   var base64 = new Buffer(buf).toString('base64');
@@ -138,17 +138,24 @@ async function getCv(name) {
   return cvCache[name];
 }
 
-const selectHistory = []
+const selectHistory = [];
 function selectDoll(name) {
   selectHistory.push({
     answer: shuffleDolls[0],
     select: name
-  })
+  });
   shuffleDolls.shift();
-  progress.value = (dolls.length - shuffleDolls.length) * (100 / dolls.length)
+  progress.value = (dolls.length - shuffleDolls.length) * (100 / dolls.length);
   if (shuffleDolls.length <= 0) {
     showResult.value = true;
   }
+  dummyImg.value.animate(
+    [
+      { transform: 'rotateY(0deg)' },
+      { transform: 'rotateY(360deg)' },
+    ], {
+    duration: 300
+  });
 }
 
 function xor2(hex1, hex2) {
